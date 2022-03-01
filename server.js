@@ -80,10 +80,10 @@ app.get('/api/v1/images', async function (req, res) {
 });
 
 const PORT = process.env.PORT || 5000;
-// const host = '0.0.0.0';
+const host = '0.0.0.0';
 
 app.listen(
   PORT,
-  // host,
+  host,
   console.log(`Server running in ${process.env.NODE_ENV} mode on port ${PORT}`)
 );
