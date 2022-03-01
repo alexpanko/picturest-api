@@ -4,7 +4,7 @@
   "description": "Picturest backend API",
   "main": "server.js",
   "scripts": {
-    "start": "node server.js",
+    "start": "NODE_ENV=production node server",
     "dev": "nodemon server"
   },
   "author": "Alex Panko",

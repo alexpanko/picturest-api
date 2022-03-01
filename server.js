@@ -52,7 +52,7 @@ app.get('/api/v1/images', async function (req, res) {
     resizex = parseInt(req.query.resizex);
     resizey = Jimp.AUTO;
     console.log(resizex);
-  } else if (!req.query.resizex && !req.query.resizey) {
+  } else if (!req.query.resizex && req.query.resizey) {
     resizex = Jimp.AUTO;
     resizey = parseInt(req.query.resizey);
   }
@@ -80,10 +80,10 @@ app.get('/api/v1/images', async function (req, res) {
 });
 
 const PORT = process.env.PORT || 5000;
-const host = '0.0.0.0';
+// const host = '0.0.0.0';
 
 app.listen(
   PORT,
-  host,
+  // host,
   console.log(`Server running in ${process.env.NODE_ENV} mode on port ${PORT}`)
 );
