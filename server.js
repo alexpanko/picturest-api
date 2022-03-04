@@ -13,11 +13,11 @@ const app = express();
 const logger = (req, res, next) => {
   console.log(
     `${req.method} ${req.protocol}://${req.get('host')}${req.originalUrl}`
-    );
+  );
   next();
-}
+};
 
-app.use(logger)
+app.use(logger);
 
 // Mount routers
 app.use('/api/v1/overlays', overlays);
@@ -43,8 +43,8 @@ app.get('/api/v1/images', async function (req, res) {
   }
 
   // Get resize parameters
-  let resizex = null
-  let resizey = null 
+  let resizex = null;
+  let resizey = null;
   if (req.query.resizex && req.query.resizey) {
     resizex = parseInt(req.query.resizex);
     resizey = parseInt(req.query.resizey);
@@ -74,7 +74,10 @@ app.get('/api/v1/images', async function (req, res) {
     }
     img.getBase64(Jimp.AUTO, function (e, img64) {
       if (err) throw err;
-      res.send('<img src="' + img64 + '">');
+      res
+        .status(200)
+        // .writeHead({ 'Content-Type': 'image/jpeg' })
+        .send('<img src="' + img64 + '">');
     });
   });
 });
