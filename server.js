@@ -1,6 +1,7 @@
 const express = require('express');
 const dotenv = require('dotenv');
 const Jimp = require('jimp');
+const fs = require('fs');
 
 // Route files
 const overlays = require('./routes/overlays');
@@ -74,10 +75,8 @@ app.get('/api/v1/images', async function (req, res) {
     }
     img.getBase64(Jimp.AUTO, function (e, img64) {
       if (err) throw err;
-      res
-        .status(200)
-        // .writeHead({ 'Content-Type': 'image/jpeg' })
-        .send('<img src="' + img64 + '">');
+      res.status(200).send('<img src="https://placekitten.com/800/900">');
+      // res.status(200).send('<img src="' + img64 + '">');
     });
   });
 });
