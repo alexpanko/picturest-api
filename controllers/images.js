@@ -1,5 +1,4 @@
 const Jimp = require('jimp');
-const express = require('express');
 
 // @desc     Get manipulated image with passed parameters
 // @route    GET /api/v1/images/
