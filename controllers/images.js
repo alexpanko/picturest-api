@@ -9,7 +9,7 @@ exports.getImages = async function (req, res) {
     // Get base image URL
     const imgUrl = req.query.imgUrl;
 
-    // Get overlay id and load overlay
+    // Get overlay id and load overlay image
     let overlay = '';
     if (req.query.overlayId) {
       const overlayObject = await Overlay.findById(req.query.overlayId);
