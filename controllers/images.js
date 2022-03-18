@@ -20,8 +20,18 @@ exports.getImages = async function (req, res) {
 
     // Get price (Use ASCII format to pass the crrency symbol)
     let price = '';
-    if (req.query.price) {
+    let priceX = 0;
+    let priceY = 0;
+    // Set default font for price
+    let priceFont = await Jimp.loadFont(Jimp.FONT_SANS_32_WHITE); // // need a default + use as paramater so user can upload custom find. Att current font doesn't support eur symbol, only usd
+    if (req.query.price && req.query.price && req.query.price) {
       price = decodeURIComponent(req.query.price);
+      priceX = parseInt(req.query.priceX);
+      priceY = parseInt(req.query.priceY);
+      // Load font for price from query params
+      priceFont = await Jimp.loadFont(
+        `./public/fonts/${req.query.priceFont}.fnt`
+      );
     }
 
     // Get resize parameters
@@ -39,9 +49,6 @@ exports.getImages = async function (req, res) {
       resizey = parseInt(req.query.resizey);
     }
 
-    // Load fonts
-    const font = await Jimp.loadFont(Jimp.FONT_SANS_32_WHITE); // // need a default + use as paramater so user can upload custom find. Att current font doesn't support eur symbol, only usd
-
     // Read base image, process and generate new without saving
     Jimp.read(imgUrl, function (err, img) {
       if (err) throw err;
@@ -52,7 +59,7 @@ exports.getImages = async function (req, res) {
         img.composite(overlay, 0, 0, [Jimp.BLEND_DESTINATION_OVER]);
       }
       if (price) {
-        img.print(font, 20, 530, price); // Starting coordinates need to pass also as parameters, for example pricex and pricey
+        img.print(priceFont, priceX, priceY, price); // Starting coordinates need to pass also as parameters, for example pricex and pricey
       }
       img.getBase64(Jimp.AUTO, function (err, img64) {
         if (err) throw err;
