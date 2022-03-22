@@ -1,6 +1,8 @@
 # Picturest API
 > On-demand image manipulation API v1.0 (MVP)
 
+> Author: Alex Panko
+
 Extensive API documentation with examples: [here](https://documenter.getpostman.com/view/10852837/UVsQsPPe)
 
 The API is live at [picturest.io](https://https://picturestapi.herokuapp.com/)
