@@ -1,12 +1,15 @@
 const Jimp = require('jimp');
 const Overlay = require('../models/Overlay');
+
+// Middleware
 const ErrorResponse = require('../utils/errorResponse');
+const asyncHandler = require('../middleware/async');
+
 
 // @desc     Get manipulated image with passed parameters
 // @route    GET /api/v1/images/
 // @access   Public
-exports.getImages = async function (req, res, next) {
-  try {
+exports.getImages = asyncHandler(async function (req, res, next) {
     // Get base image URL
     const imgUrl = req.query.imgUrl;
 
@@ -117,7 +120,7 @@ exports.getImages = async function (req, res, next) {
             500
           )
         );
-      try {
+        
         if (resizex || resizey) {
           img.resize(resizex, resizey);
         }
@@ -154,11 +157,5 @@ exports.getImages = async function (req, res, next) {
             })
             .end(image);
         });
-      } catch (err) {
-        next(err);
-      }
     });
-  } catch (err) {
-    next(err);
-  }
-};
+});
