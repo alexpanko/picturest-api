@@ -1,27 +1,27 @@
+// Middleware
+const ErrorResponse = require('../utils/errorResponse');
+const asyncHandler = require('../middelware/async');
+
 const path = require('path');
 const Overlay = require('../models/Overlay');
-const ErrorResponse = require('../utils/errorResponse');
+
+
 
 // @desc     Get all overlays
 // @route    GET /api/v1/overlays
 // @access   Public
-exports.getOverlays = async (req, res, next) => {
-  try {
+exports.getOverlays = asyncHandler(async (req, res, next) => {
     const overlays = await Overlay.find();
 
     res
       .status(200)
       .json({ success: true, count: overlays.length, data: overlays });
-  } catch (err) {
-    next(err)
-  }
-};
+});
 
 // @desc     Get single overlays
 // @route    GET /api/v1/overlays/:id
 // @access   Public
-exports.getOverlay = async (req, res, next) => {
-  try {
+exports.getOverlay = asyncHandler(async (req, res, next) => {
     const overlay = await Overlay.findById(req.params.id);
 
     if (!overlay) {
@@ -29,32 +29,24 @@ exports.getOverlay = async (req, res, next) => {
     }
 
     res.status(200).json({ success: true, data: overlay });
-  } catch (err) {
-    next(err)
-  }
-};
+});
 
 // @desc     Create new overlay
 // @route    POST /api/v1/overlays
 // @access   Private
-exports.createOverlay = async (req, res, next) => {
-  try {
+exports.createOverlay = asyncHandler(async (req, res, next) => {
     const overlay = await Overlay.create(req.body);
 
     res.status(201).json({
       success: true,
       data: overlay,
     });
-  } catch (err) {
-    next(err)
-  }
-};
+});
 
 // @desc     Update overlay
 // @route    PUT /api/v1/overlays/:id
 // @access   Private
-exports.updateOverlay = async (req, res, next) => {
-  try {
+exports.updateOverlay = asyncHandler(async (req, res, next) => {
     const overlay = await Overlay.findByIdAndUpdate(req.params.id, req.body, {
       new: true,
       runValidators: true,
@@ -63,31 +55,23 @@ exports.updateOverlay = async (req, res, next) => {
       return next(new ErrorResponse(`Overlay not found with id of ${req.params.id}`, 404));
     }
     res.status(200).json({ success: true, data: overlay });
-  } catch (err) {
-    next(err)
-  }
-};
+});
 
 // @desc     Delete overlay
 // @route    DELETE /api/v1/overlays/:id
 // @access   Private
-exports.deleteOverlay = async (req, res, next) => {
-  try {
+exports.deleteOverlay = asyncHandler(async (req, res, next) => {
     const overlay = await Overlay.findByIdAndDelete(req.params.id);
     if (!overlay) {
       return next(new ErrorResponse(`Overlay not found with id of ${req.params.id}`, 404));
     }
     res.status(200).json({ success: true, data: {} });
-  } catch (err) {
-    next(err)
-  }
-};
+});
 
 // @desc     Upload image overlay
 // @route    PUT /api/v1/overlays/:id/image
 // @access   Private
-exports.overlayImageUpload = async (req, res, next) => {
-  try {
+exports.overlayImageUpload = asyncHandler(async (req, res, next) => {
     const overlay = await Overlay.findById(req.params.id);
     if (!overlay) {
       return next(new ErrorResponse(`Overlay not found with id of ${req.params.id}`, 404));
@@ -124,7 +108,4 @@ exports.overlayImageUpload = async (req, res, next) => {
         data: file.name,
       });
     });
-  } catch (err) {
-    next(err)
-  }
-};
+});
