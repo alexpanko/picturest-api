@@ -1,6 +1,6 @@
 // Middleware
 const ErrorResponse = require('../utils/errorResponse');
-const asyncHandler = require('../middelware/async');
+const asyncHandler = require('../middleware/async');
 
 const path = require('path');
 const Overlay = require('../models/Overlay');
