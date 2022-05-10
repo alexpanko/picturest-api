@@ -3,6 +3,7 @@ const express = require('express');
 const dotenv = require('dotenv');
 const morgan = require('morgan');
 const colors = require('colors');
+const errorHandler = require('./middelware/error');
 const fileupload = require('express-fileupload');
 const connectDB = require('./config/db');
 
@@ -36,6 +37,9 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/api/v1/overlays', overlays);
 
 app.use('/api/v1/images', images);
+
+// Error handler middleware
+app.use(errorHandler);
 
 const PORT = process.env.PORT || 5000;
 const host = '0.0.0.0';

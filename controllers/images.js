@@ -1,10 +1,11 @@
 const Jimp = require('jimp');
 const Overlay = require('../models/Overlay');
+const ErrorResponse = require('../utils/errorResponse');
 
 // @desc     Get manipulated image with passed parameters
 // @route    GET /api/v1/images/
 // @access   Public
-exports.getImages = async function (req, res) {
+exports.getImages = async function (req, res, next) {
   try {
     // Get base image URL
     const imgUrl = req.query.imgUrl;
@@ -109,44 +110,55 @@ exports.getImages = async function (req, res) {
 
     // Read base image, process and generate new without saving
     Jimp.read(imgUrl, function (err, img) {
-      if (err) throw err;
-      if (resizex || resizey) {
-        img.resize(resizex, resizey);
-      }
-      if (cropW || cropH) {
-        img.crop(cropX, cropY, cropW, cropH);
-      }
-      if (overlay) {
-        img.composite(overlay, 0, 0, [Jimp.BLEND_DESTINATION_OVER]);
-      }
-      if (price) {
-        img.print(priceFont, priceX, priceY, price);
-      }
-      if (custom1) {
-        img.print(custom1Font, custom1X, custom1Y, custom1);
-      }
-      if (custom2) {
-        img.print(custom2Font, custom2X, custom2Y, custom2);
-      }
-      if (custom3) {
-        img.print(custom3Font, custom3X, custom3Y, custom3);
-      }
-      img.getBase64(Jimp.AUTO, function (err, img64) {
-        if (err) throw err;
-        const base64Data = img64.replace(
-          /^data:image\/(png|jpeg|jpg);base64,/,
-          ''
+      if (err)
+        return next(
+          new ErrorResponse(
+            `Something went wrong, check your base image URL`,
+            500
+          )
         );
-        const image = Buffer.from(base64Data, 'base64');
-        res
-          .writeHead(200, {
-            'Content-Type': 'image/jpeg',
-            'Content-Length': image.length,
-          })
-          .end(image);
-      });
+      try {
+        if (resizex || resizey) {
+          img.resize(resizex, resizey);
+        }
+        if (cropW || cropH) {
+          img.crop(cropX, cropY, cropW, cropH);
+        }
+        if (overlay) {
+          img.composite(overlay, 0, 0, [Jimp.BLEND_DESTINATION_OVER]);
+        }
+        if (price) {
+          img.print(priceFont, priceX, priceY, price);
+        }
+        if (custom1) {
+          img.print(custom1Font, custom1X, custom1Y, custom1);
+        }
+        if (custom2) {
+          img.print(custom2Font, custom2X, custom2Y, custom2);
+        }
+        if (custom3) {
+          img.print(custom3Font, custom3X, custom3Y, custom3);
+        }
+
+        img.getBase64(Jimp.AUTO, function (err, img64) {
+          if (err) throw err;
+          const base64Data = img64.replace(
+            /^data:image\/(png|jpeg|jpg);base64,/,
+            ''
+          );
+          const image = Buffer.from(base64Data, 'base64');
+          res
+            .writeHead(200, {
+              'Content-Type': 'image/jpeg',
+              'Content-Length': image.length,
+            })
+            .end(image);
+        });
+      } catch (err) {
+        next(err);
+      }
     });
-  } catch (error) {
-    res.status(400).json({ success: false });
+  } catch (err) {
+    next(err);
   }
 };

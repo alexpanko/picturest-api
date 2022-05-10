@@ -1,5 +1,6 @@
 const path = require('path');
 const Overlay = require('../models/Overlay');
+const ErrorResponse = require('../utils/errorResponse');
 
 // @desc     Get all overlays
 // @route    GET /api/v1/overlays
@@ -11,8 +12,8 @@ exports.getOverlays = async (req, res, next) => {
     res
       .status(200)
       .json({ success: true, count: overlays.length, data: overlays });
-  } catch (error) {
-    res.status(400).json({ success: false });
+  } catch (err) {
+    next(err)
   }
 };
 
@@ -24,12 +25,12 @@ exports.getOverlay = async (req, res, next) => {
     const overlay = await Overlay.findById(req.params.id);
 
     if (!overlay) {
-      return res.status(400).json({ success: false });
+      return next(new ErrorResponse(`Overlay not found with id of ${req.params.id}`, 404));
     }
 
     res.status(200).json({ success: true, data: overlay });
-  } catch (error) {
-    res.status(400).json({ success: false });
+  } catch (err) {
+    next(err)
   }
 };
 
@@ -44,8 +45,8 @@ exports.createOverlay = async (req, res, next) => {
       success: true,
       data: overlay,
     });
-  } catch (error) {
-    res.status(400).json({ success: false });
+  } catch (err) {
+    next(err)
   }
 };
 
@@ -59,11 +60,11 @@ exports.updateOverlay = async (req, res, next) => {
       runValidators: true,
     });
     if (!overlay) {
-      return res.status(400).json({ success: false });
+      return next(new ErrorResponse(`Overlay not found with id of ${req.params.id}`, 404));
     }
     res.status(200).json({ success: true, data: overlay });
-  } catch (error) {
-    res.status(400).json({ success: false });
+  } catch (err) {
+    next(err)
   }
 };
 
@@ -74,11 +75,11 @@ exports.deleteOverlay = async (req, res, next) => {
   try {
     const overlay = await Overlay.findByIdAndDelete(req.params.id);
     if (!overlay) {
-      return res.status(400).json({ success: false });
+      return next(new ErrorResponse(`Overlay not found with id of ${req.params.id}`, 404));
     }
     res.status(200).json({ success: true, data: {} });
-  } catch (error) {
-    res.status(400).json({ success: false });
+  } catch (err) {
+    next(err)
   }
 };
 
@@ -89,22 +90,22 @@ exports.overlayImageUpload = async (req, res, next) => {
   try {
     const overlay = await Overlay.findById(req.params.id);
     if (!overlay) {
-      return res.status(400).json({ success: false });
+      return next(new ErrorResponse(`Overlay not found with id of ${req.params.id}`, 404));
     }
     if (!req.files) {
-      return res.status(400).json({ success: false }); //update with: return next(new ErrorResponse(`Please upload a file`, 400))
+      return next(new ErrorResponse(`Please upload a file`, 400));
     }
 
     const file = req.files.file;
 
     // Make sure the image is a photo
     if (!file.mimetype.startsWith('image')) {
-      return res.status(400).json({ success: false }); //update with: return next(new ErrorResponse(`Please upload an image file`, 400))
+      return next(new ErrorResponse(`Please upload an image file`, 400));
     }
 
     // Check filesize
     if (file.size > process.env.MAX_FILE_UPLOAD) {
-      return res.status(400).json({ success: false }); //update with: return next(new ErrorResponse(`Please upload an image less then ${process.env.MAX_FILE_UPLOAD}`, 400))
+      return next(new ErrorResponse(`Please upload an image less then ${process.env.MAX_FILE_UPLOAD}`, 400));
     }
 
     // Create custom filename
@@ -113,7 +114,7 @@ exports.overlayImageUpload = async (req, res, next) => {
     file.mv(`./${process.env.OVERLAY_IMAGE_UPLOAD_PATH}/${file.name}`, async (err) => {
       if (err) {
         console.error(err);
-        return res.status(500).json({ success: false }); //update with: return next(new ErrorResponse(`Problem with file upload`, 500))
+        return next(new ErrorResponse(`Problem with file upload`, 500));
       }
 
       await Overlay.findByIdAndUpdate(req.params.id, { image: file.name });
@@ -123,7 +124,7 @@ exports.overlayImageUpload = async (req, res, next) => {
         data: file.name,
       });
     });
-  } catch (error) {
-    res.status(400).json({ success: false });
+  } catch (err) {
+    next(err)
   }
 };
