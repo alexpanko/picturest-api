@@ -11,7 +11,50 @@ const Overlay = require('../models/Overlay');
 // @route    GET /api/v1/overlays
 // @access   Public
 exports.getOverlays = asyncHandler(async (req, res, next) => {
-    const overlays = await Overlay.find();
+
+    let query
+
+    // Copy req.query
+    const reqQuery = { ...req.query }
+
+    // Fields to exclude
+    const removeFields = ['select', 'sort', 'page', 'limit']
+
+    // Loop over removeFields and delete them from reqQuery
+    removeFields.forEach(param => delete reqQuery[param])
+
+    // Create query string
+    let queryStr = JSON.stringify(reqQuery)
+
+    // Posibility to create additional operators (e.g. $gt, $gte, etc.)
+    // queryStr = queryStr.replace(/\b(gt|gte|lt|lte|in)\b/g, match => `$${match}`)
+
+    // Finding resource
+    query = Overlay.find(JSON.parse(queryStr))
+
+    // Select Fields
+    if(req.query.select) {
+      const fields = req.query.select.split(',').join(' ')
+      query = query.select(fields)
+    }
+
+    // Sort 
+    if(req.query.sort) {
+      const sortBy = req.query.sort.split(',').join(' ');
+      query = query.sort(sortBy)
+    } else {
+      query = query.sort('-createdAt')
+    }
+
+    // Pagination
+    const page = parseInt(req.query.page, 10) || 1;
+    const limit = parseInt(req.query.limit, 10) || 100;
+    const skip = (page - 1) * limit;
+
+    query = query.skip(skip).limit(limit);
+
+    // Execute query
+    const overlays = await Overlay.find(query);
 
     res
       .status(200)
@@ -87,7 +130,7 @@ exports.overlayImageUpload = asyncHandler(async (req, res, next) => {
       return next(new ErrorResponse(`Please upload an image file`, 400));
     }
 
-    // Check filesize
+    // Check file size
     if (file.size > process.env.MAX_FILE_UPLOAD) {
       return next(new ErrorResponse(`Please upload an image less then ${process.env.MAX_FILE_UPLOAD}`, 400));
     }
