@@ -1,8 +1,8 @@
 const express = require('express');
-const { getImages } = require('../controllers/images');
+const { newImage } = require('../controllers/newimage');
 
 const router = express.Router();
 
-router.route('/').get(getImages);
+router.route('/').get(newImage);
 
 module.exports = router;

@@ -14,6 +14,7 @@ dotenv.config({ path: './config/config.env' });
 connectDB();
 
 // Route files
+const newimage = require('./routes/newimage');
 const overlays = require('./routes/overlays');
 const images = require('./routes/images');
 
@@ -34,6 +35,8 @@ app.use(fileupload());
 app.use(express.static(path.join(__dirname, 'public')));
 
 // Mount routers
+app.use('/api/v1/newimage', newimage);
+
 app.use('/api/v1/overlays', overlays);
 
 app.use('/api/v1/images', images);
