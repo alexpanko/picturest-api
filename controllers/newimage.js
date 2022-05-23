@@ -1,6 +1,5 @@
-// Image generation with URL parameters only (base image and overlay must be passed as URLs)
-
 const Jimp = require('jimp');
+const Overlay = require('../models/Overlay');
 
 // Middleware
 const ErrorResponse = require('../utils/errorResponse');
@@ -10,14 +9,19 @@ const asyncHandler = require('../middleware/async');
 // @desc     Get manipulated image with passed parameters
 // @route    GET /api/v1/newimage/
 // @access   Public
-exports.newImage = asyncHandler(async function (req, res, next) {
+exports.getNewImage = asyncHandler(async function (req, res, next) {
     // Get base image URL
     const baseimage = req.query.baseimage;
 
     // Get overlay image
     let overlay
-    if (req.query.overlay) {
-      overlay = await Jimp.read(req.query.overlay);
+    if (req.query.overlayimage) {
+      overlay = await Jimp.read(req.query.overlayimage);
+    } else if (!req.query.overlayimage && req.query.overlayid) {
+      const overlayObject = await Overlay.findById(req.query.overlayid);
+      overlay = await Jimp.read(
+        `${process.env.OVERLAY_IMAGE_UPLOAD_PATH}/${overlayObject.image}`
+      );
     }
 
     // Get price (Use ASCII format to pass the crrency symbol)

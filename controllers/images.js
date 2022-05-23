@@ -1,3 +1,6 @@
+// OLD version (keep for testing or remove)
+
+
 const Jimp = require('jimp');
 const Overlay = require('../models/Overlay');
 

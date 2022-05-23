@@ -8,9 +8,12 @@ const {
   overlayImageUpload
 } = require('../controllers/overlays');
 
+const Overlay = require('../models/Overlay')
+const advancedResults = require('../middleware/advancedResults');
+
 const router = express.Router();
 
-router.route('/').get(getOverlays).post(createOverlay);
+router.route('/').get(advancedResults(Overlay), getOverlays).post(createOverlay);
 
 router.route('/:id').get(getOverlay).put(updateOverlay).delete(deleteOverlay);
 
