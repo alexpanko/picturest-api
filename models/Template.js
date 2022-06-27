@@ -21,7 +21,6 @@ const TemplateSchema = new mongoose.Schema({
   price: {
     axisX: Number,
     axisY: Number,
-    currency: String,
     font: String,
   },
   createdAt: {

@@ -18,6 +18,7 @@ const newimage = require('./routes/newimage');
 const templates = require('./routes/templates');
 const overlays = require('./routes/overlays');
 const images = require('./routes/images');
+const auth = require('./routes/auth');
 
 const app = express();
 
@@ -37,12 +38,10 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 // Mount routers
 app.use('/api/v1/newimage', newimage);
-
 app.use('/api/v1/templates', templates);
-
 app.use('/api/v1/overlays', overlays);
-
 app.use('/api/v1/images', images);
+app.use('/api/v1/auth', auth);
 
 // Error handler middleware
 app.use(errorHandler);
