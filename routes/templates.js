@@ -5,19 +5,30 @@ const {
   createTemplate,
   updateTemplate,
   deleteTemplate,
-  templateImageUpload
+  templateImageUpload,
 } = require('../controllers/templates');
 
-const Template = require('../models/Template')
+const Template = require('../models/Template');
 const advancedResults = require('../middleware/advancedResults');
 
 const router = express.Router();
 
-router.route('/').get(advancedResults(Template), getTemplates).post(createTemplate);
+const { protect, authorize } = require('../middleware/auth');
 
-router.route('/:id').get(getTemplate).put(updateTemplate).delete(deleteTemplate);
+router
+  .route('/')
+  .get(advancedResults(Template), getTemplates)
+  .post(protect, authorize('user', 'admin'), createTemplate);
+
+router
+  .route('/:id')
+  .get(getTemplate)
+  .put(protect, authorize('user', 'admin'), updateTemplate)
+  .delete(protect, authorize('user', 'admin'), deleteTemplate);
 
 // Route for image template file upload
-router.route('/:id/image').put(templateImageUpload);
+router
+  .route('/:id/image')
+  .put(protect, authorize('user', 'admin'), templateImageUpload);
 
 module.exports = router;
