@@ -39,6 +39,9 @@ exports.getTemplate = asyncHandler(async (req, res, next) => {
 // @route    POST /api/v1/templates
 // @access   Private
 exports.createTemplate = asyncHandler(async (req, res, next) => {
+  // Add user to req.body
+  req.body.user = req.user.id;
+
   const template = await Template.create(req.body);
 
   res.status(201).json({
@@ -51,15 +54,29 @@ exports.createTemplate = asyncHandler(async (req, res, next) => {
 // @route    PUT /api/v1/templates/:id
 // @access   Private
 exports.updateTemplate = asyncHandler(async (req, res, next) => {
-  const template = await Template.findByIdAndUpdate(req.params.id, req.body, {
-    new: true,
-    runValidators: true,
-  });
+  let template = await Template.findById(req.params.id);
+
   if (!template) {
     return next(
       new ErrorResponse(`Template not found with id of ${req.params.id}`, 404)
     );
   }
+
+  // Make sure user is template owner
+  if (template.user.toString() !== req.user.id && req.user.role !== 'admin') {
+    return next(
+      new ErrorResponse(
+        `User ${req.params.id} is not authorized to update this template`,
+        401
+      )
+    );
+  }
+
+  template = await Template.findByIdAndUpdate(req.params.id, req.body, {
+    new: true,
+    runValidators: true,
+  });
+
   res.status(200).json({ success: true, data: template });
 });
 
@@ -67,12 +84,26 @@ exports.updateTemplate = asyncHandler(async (req, res, next) => {
 // @route    DELETE /api/v1/templates/:id
 // @access   Private
 exports.deleteTemplate = asyncHandler(async (req, res, next) => {
-  const template = await Template.findByIdAndDelete(req.params.id);
+  const template = await Template.findById(req.params.id);
+
   if (!template) {
     return next(
       new ErrorResponse(`Template not found with id of ${req.params.id}`, 404)
     );
   }
+
+  // Make sure user is template owner
+  if (template.user.toString() !== req.user.id && req.user.role !== 'admin') {
+    return next(
+      new ErrorResponse(
+        `User ${req.params.id} is not authorized to delete this template`,
+        401
+      )
+    );
+  }
+
+  template.remove();
+
   res.status(200).json({ success: true, data: {} });
 });
 
@@ -86,6 +117,17 @@ exports.templateImageUpload = asyncHandler(async (req, res, next) => {
       new ErrorResponse(`Template not found with id of ${req.params.id}`, 404)
     );
   }
+
+  // Make sure user is template owner
+  if (template.user.toString() !== req.user.id && req.user.role !== 'admin') {
+    return next(
+      new ErrorResponse(
+        `User ${req.params.id} is not authorized to update this template`,
+        401
+      )
+    );
+  }
+
   if (!req.files) {
     return next(new ErrorResponse(`Please upload a file`, 400));
   }
