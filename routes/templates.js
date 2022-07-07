@@ -17,12 +17,12 @@ const { protect, authorize } = require('../middleware/auth');
 
 router
   .route('/')
-  .get(advancedResults(Template), getTemplates)
+  .get(protect, authorize('user', 'admin'), advancedResults(Template), getTemplates)
   .post(protect, authorize('user', 'admin'), createTemplate);
 
 router
   .route('/:id')
-  .get(getTemplate)
+  .get(protect, authorize('user', 'admin'), getTemplate)
   .put(protect, authorize('user', 'admin'), updateTemplate)
   .delete(protect, authorize('user', 'admin'), deleteTemplate);
 

@@ -17,7 +17,17 @@ const cloudinary = require('../config/cloudinary');
 // @route    GET /api/v1/templates
 // @access   Private
 exports.getTemplates = asyncHandler(async (req, res, next) => {
-  res.status(200).json(res.advancedResults);
+  if (req.user.id) {
+    const templates = await Template.find({ user: req.user.id });
+
+    return res.status(200).json({
+      success: true,
+      count: templates.length,
+      data: templates,
+    });
+  } else {
+    res.status(200).json(res.advancedResults);
+  }
 });
 
 // @desc     Get single Template
@@ -29,6 +39,16 @@ exports.getTemplate = asyncHandler(async (req, res, next) => {
   if (!template) {
     return next(
       new ErrorResponse(`Template not found with id of ${req.params.id}`, 404)
+    );
+  }
+
+  // Make sure user is template owner
+  if (template.user.toString() !== req.user.id && req.user.role !== 'admin') {
+    return next(
+      new ErrorResponse(
+        `User ${req.params.id} is not authorized to get this template`,
+        401
+      )
     );
   }
 
