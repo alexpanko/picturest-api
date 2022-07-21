@@ -76,122 +76,81 @@ exports.deleteOverlay = asyncHandler(async (req, res, next) => {
   res.status(200).json({ success: true, data: {} });
 });
 
-// // @desc     Upload overlay image (Cloudinary via server)
-// // @route    PUT /api/v1/overlays/:id/image
-// // @access   Private
-// exports.overlayImageUpload = asyncHandler(async (req, res, next) => {
-//   const overlay = await Overlay.findById(req.params.id);
-//   if (!overlay) {
-//     return next(
-//       new ErrorResponse(`Overlay not found with id of ${req.params.id}`, 404)
-//     );
-//   }
-//   if (!req.files) {
-//     return next(new ErrorResponse(`Please upload a file`, 400));
-//   }
-
-//   const file = req.files.file;
-
-//   // Make sure the image is a photo
-//   if (!file.mimetype.startsWith('image')) {
-//     return next(new ErrorResponse(`Please upload an image file`, 400));
-//   }
-
-//   // Check file size
-//   if (file.size > process.env.MAX_FILE_UPLOAD) {
-//     return next(
-//       new ErrorResponse(
-//         `Please upload an image less then ${process.env.MAX_FILE_UPLOAD}`,
-//         400
-//       )
-//     );
-//   }
-
-//   // Create custom filename
-//   file.name = `overlay_${overlay._id}${path.parse(file.name).ext}`;
-
-//   // Save file to server
-//   file.mv(
-//     `./${process.env.OVERLAY_IMAGE_UPLOAD_PATH}/${file.name}`,
-//     async (err) => {
-//       if (err) {
-//         console.error(err);
-//         return next(new ErrorResponse(`Problem with file upload`, 500));
-//       }
-
-//       await Overlay.findByIdAndUpdate(req.params.id, { image: file.name });
-//     }
-//   );
-
-//   // Upload file to Cloudinary
-//   await cloudinary.v2.uploader.upload(
-//     `./${process.env.OVERLAY_IMAGE_UPLOAD_PATH}/${file.name}`,
-//     {
-//       public_id: path.parse(file.name).name,
-//       folder: 'templates',
-//     },
-//     function (error, result) {
-//       res.status(200).json({
-//         success: true,
-//         data: result.url,
-//       });
-//     }
-//   );
-
-//   // Update overlay image path in database
-//   await Overlay.findByIdAndUpdate(req.params.id, {
-//     new: true,
-//     runValidators: true,
-//     image: `${process.env.CLOUDINARY_IMAGE_UPLOAD_PATH}/${file.name}`,
-//   });
-
-//   //Remove file from server
-//   const imagePath = `${process.env.OVERLAY_IMAGE_UPLOAD_PATH}/${file.name}`;
-//   await unlinkFile(imagePath);
-// });
-
-// @desc     Upload image overlay
+// @desc     Upload overlay image (Cloudinary via server)
 // @route    PUT /api/v1/overlays/:id/image
 // @access   Private
-exports.overlayImageUpload = async (req, res, next) => {
-  try {
-    const overlay = await Overlay.findById(req.params.id);
-    if (!overlay) {
-      return res.status(400).json({ success: false });
-    }
-    if (!req.files) {
-      return res.status(400).json({ success: false }); //update with: return next(new ErrorResponse(`Please upload a file`, 400))
-    }
+exports.overlayImageUpload = asyncHandler(async (req, res, next) => {
+  const overlay = await Overlay.findById(req.params.id);
+  if (!overlay) {
+    return next(
+      new ErrorResponse(`Overlay not found with id of ${req.params.id}`, 404)
+    );
+  }
+  if (!req.files) {
+    return next(new ErrorResponse(`Please upload a file`, 400));
+  }
 
-    const file = req.files.file;
+  const file = req.files.file;
 
-    // Make sure the image is a photo
-    if (!file.mimetype.startsWith('image')) {
-      return res.status(400).json({ success: false }); //update with: return next(new ErrorResponse(`Please upload an image file`, 400))
-    }
+  // Make sure the image is a photo
+  if (!file.mimetype.startsWith('image')) {
+    return next(new ErrorResponse(`Please upload an image file`, 400));
+  }
 
-    // Check filesize
-    if (file.size > process.env.MAX_FILE_UPLOAD) {
-      return res.status(400).json({ success: false }); //update with: return next(new ErrorResponse(`Please upload an image less then ${process.env.MAX_FILE_UPLOAD}`, 400))
-    }
+  // Check file size
+  if (file.size > process.env.MAX_FILE_UPLOAD) {
+    return next(
+      new ErrorResponse(
+        `Please upload an image less then ${process.env.MAX_FILE_UPLOAD}`,
+        400
+      )
+    );
+  }
 
-    // Create custom filename
-    file.name = `overlay_${overlay._id}${path.parse(file.name).ext}`;
+  // Create custom filename
+  file.name = `overlay_${overlay._id}${path.parse(file.name).ext}`;
 
-    file.mv(`./${process.env.OVERLAY_IMAGE_UPLOAD_PATH}/${file.name}`, async (err) => {
+  // Save file to server
+  file.mv(
+    `./${process.env.OVERLAY_IMAGE_UPLOAD_PATH}/${file.name}`,
+    async (err) => {
       if (err) {
         console.error(err);
-        return res.status(500).json({ success: false }); //update with: return next(new ErrorResponse(`Problem with file upload`, 500))
+        return next(new ErrorResponse(`Problem with file upload`, 500));
       }
 
       await Overlay.findByIdAndUpdate(req.params.id, { image: file.name });
+    }
+  );
 
-      res.status(200).json({
-        success: true,
-        data: file.name,
-      });
-    });
-  } catch (error) {
-    res.status(400).json({ success: false });
-  }
-};
+  res.status(200).json({
+    success: true,
+    data: file.name,
+  });
+
+  //   // Upload file to Cloudinary
+  //   await cloudinary.v2.uploader.upload(
+  //     `./${process.env.OVERLAY_IMAGE_UPLOAD_PATH}/${file.name}`,
+  //     {
+  //       public_id: path.parse(file.name).name,
+  //       folder: 'templates',
+  //     },
+  //     function (error, result) {
+  //       res.status(200).json({
+  //         success: true,
+  //         data: result.url,
+  //       });
+  //     }
+  //   );
+
+  //   // Update overlay image path in database
+  //   await Overlay.findByIdAndUpdate(req.params.id, {
+  //     new: true,
+  //     runValidators: true,
+  //     image: `${process.env.CLOUDINARY_IMAGE_UPLOAD_PATH}/${file.name}`,
+  //   });
+
+  //   //Remove file from server
+  //   const imagePath = `${process.env.OVERLAY_IMAGE_UPLOAD_PATH}/${file.name}`;
+  //   await unlinkFile(imagePath);
+});
