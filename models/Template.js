@@ -23,6 +23,21 @@ const TemplateSchema = new mongoose.Schema({
     axisY: Number,
     font: String,
   },
+  custom1: {
+    axisX: Number,
+    axisY: Number,
+    font: String,
+  },
+  custom2: {
+    axisX: Number,
+    axisY: Number,
+    font: String,
+  },
+  custom3: {
+    axisX: Number,
+    axisY: Number,
+    font: String,
+  },
   createdAt: {
     type: Date,
     default: Date.now,
