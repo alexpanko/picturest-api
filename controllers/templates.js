@@ -189,7 +189,7 @@ exports.templateImageUpload = asyncHandler(async (req, res, next) => {
 
   // Upload file to Cloudinary
   await cloudinary.v2.uploader.upload(
-    `/${process.env.TEMPLATE_IMAGE_UPLOAD_PATH}/${file.name}`,
+    `/templates/${file.name}`,
     {
       public_id: path.parse(file.name).name,
       folder: 'templates',
