@@ -123,8 +123,6 @@ exports.overlayImageUpload = asyncHandler(async (req, res, next) => {
     }
   );
 
-  console.log(`https://picturestapi.herokuapp.com/overlays/${file.name}`)
-
   // Upload file to Cloudinary
   await cloudinary.v2.uploader.upload(
     // `./${process.env.OVERLAY_IMAGE_UPLOAD_PATH}/${file.name}`,
@@ -134,7 +132,6 @@ exports.overlayImageUpload = asyncHandler(async (req, res, next) => {
       folder: 'templates',
     },
     function (error, result) {
-      console.log(result)
       res.status(200).json({
         success: true,
         data: result.url,
