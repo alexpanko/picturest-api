@@ -111,7 +111,7 @@ exports.overlayImageUpload = asyncHandler(async (req, res, next) => {
   file.name = `overlay_${overlay._id}${path.parse(file.name).ext}`;
 
   // Save file to server
-  await file.mv(
+  file.mv(
     `./${process.env.OVERLAY_IMAGE_UPLOAD_PATH}/${file.name}`,
     async (err) => {
       if (err) {
@@ -134,7 +134,7 @@ exports.overlayImageUpload = asyncHandler(async (req, res, next) => {
       folder: 'templates',
     },
     function (error, result) {
-      res.status(200).json({
+      await res.status(200).json({
         success: true,
         data: result.url,
       });
