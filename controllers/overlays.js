@@ -111,7 +111,7 @@ exports.overlayImageUpload = asyncHandler(async (req, res, next) => {
   file.name = `overlay_${overlay._id}${path.parse(file.name).ext}`;
 
   // Save file to server
-  file.mv(
+  await file.mv(
     `./${process.env.OVERLAY_IMAGE_UPLOAD_PATH}/${file.name}`,
     async (err) => {
       if (err) {
@@ -128,7 +128,7 @@ exports.overlayImageUpload = asyncHandler(async (req, res, next) => {
   // Upload file to Cloudinary
   await cloudinary.v2.uploader.upload(
     // `./${process.env.OVERLAY_IMAGE_UPLOAD_PATH}/${file.name}`,
-    `https://picturestapi.herokuapp.com/templates/template_62d947244f983e0f63c6a6cc.png`,
+    `https://picturestapi.herokuapp.com/templates/${file.name}`,
     {
       public_id: path.parse(file.name).name,
       folder: 'templates',
