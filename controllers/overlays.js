@@ -123,34 +123,32 @@ exports.overlayImageUpload = asyncHandler(async (req, res, next) => {
     }
   );
 
-  res.status(200).json({
-    success: true,
-    data: file.name,
+  console.log(file.name)
+
+  // Upload file to Cloudinary
+  await cloudinary.v2.uploader.upload(
+    // `./${process.env.OVERLAY_IMAGE_UPLOAD_PATH}/${file.name}`,
+    `https://picturestapi.herokuapp.com/templates/${file.name}`,
+    {
+      public_id: path.parse(file.name).name,
+      folder: 'templates',
+    },
+    function (error, result) {
+      res.status(200).json({
+        success: true,
+        data: result.url,
+      });
+    }
+  );
+
+  // Update overlay image path in database
+  await Overlay.findByIdAndUpdate(req.params.id, {
+    new: true,
+    runValidators: true,
+    image: `${process.env.CLOUDINARY_IMAGE_UPLOAD_PATH}/${file.name}`,
   });
 
-    // Upload file to Cloudinary
-    await cloudinary.v2.uploader.upload(
-      `./${process.env.OVERLAY_IMAGE_UPLOAD_PATH}/${file.name}`,
-      {
-        public_id: path.parse(file.name).name,
-        folder: 'templates',
-      },
-      function (error, result) {
-        res.status(200).json({
-          success: true,
-          data: result.url,
-        });
-      }
-    );
-
-    // Update overlay image path in database
-    await Overlay.findByIdAndUpdate(req.params.id, {
-      new: true,
-      runValidators: true,
-      image: `${process.env.CLOUDINARY_IMAGE_UPLOAD_PATH}/${file.name}`,
-    });
-
-    //Remove file from server
-    const imagePath = `${process.env.OVERLAY_IMAGE_UPLOAD_PATH}/${file.name}`;
-    await unlinkFile(imagePath);
+  //Remove file from server
+  const imagePath = `${process.env.OVERLAY_IMAGE_UPLOAD_PATH}/${file.name}`;
+  await unlinkFile(imagePath);
 });

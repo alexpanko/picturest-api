@@ -13,6 +13,12 @@ const unlinkFile = util.promisify(fs.unlink);
 // Require the Cloudinary library and configuration
 const cloudinary = require('../config/cloudinary');
 
+// Cloudinary file upload
+const multer  = require('multer')
+const fileUpload = multer()
+const streamifier = require('streamifier');
+
+
 // @desc     Get all Templates
 // @route    GET /api/v1/templates
 // @access   Private
@@ -185,31 +191,31 @@ exports.templateImageUpload = asyncHandler(async (req, res, next) => {
     }
   );
 
-  console.log(`${process.env.PRODUCTION_URL}/templates/${file.name}`)
+  upload.single(file)
 
-  // Upload file to Cloudinary
-  await cloudinary.v2.uploader.upload(
-    `/templates/${file.name}`,
-    {
-      public_id: path.parse(file.name).name,
-      folder: 'templates',
-    },
-    function (error, result) {
-      res.status(200).json({
-        success: true,
-        data: result.url,
-      });
-    }
-  );
+  // // Upload file to Cloudinary
+  // await cloudinary.v2.uploader.upload(
+  //   `/${process.env.TEMPLATE_IMAGE_UPLOAD_PATH}/${file.name}`,
+  //   {
+  //     public_id: path.parse(file.name).name,
+  //     folder: 'templates',
+  //   },
+  //   function (error, result) {
+  //     res.status(200).json({
+  //       success: true,
+  //       data: result.url,
+  //     });
+  //   }
+  // );
 
-  // Update template image path in database
-  await Template.findByIdAndUpdate(req.params.id, {
-    new: true,
-    runValidators: true,
-    image: `${process.env.CLOUDINARY_IMAGE_UPLOAD_PATH}/${file.name}`,
-  });
+  // // Update template image path in database
+  // await Template.findByIdAndUpdate(req.params.id, {
+  //   new: true,
+  //   runValidators: true,
+  //   image: `${process.env.CLOUDINARY_IMAGE_UPLOAD_PATH}/${file.name}`,
+  // });
 
-  //Remove file from server
-  const imagePath = `${process.env.TEMPLATE_IMAGE_UPLOAD_PATH}/${file.name}`;
-  await unlinkFile(imagePath);
+  // //Remove file from server
+  // const imagePath = `${process.env.TEMPLATE_IMAGE_UPLOAD_PATH}/${file.name}`;
+  // await unlinkFile(imagePath);
 });
