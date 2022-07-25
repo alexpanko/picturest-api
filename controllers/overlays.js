@@ -128,7 +128,7 @@ exports.overlayImageUpload = asyncHandler(async (req, res, next) => {
   // Upload file to Cloudinary
   await cloudinary.v2.uploader.upload(
     // `./${process.env.OVERLAY_IMAGE_UPLOAD_PATH}/${file.name}`,
-    `https://picturestapi.herokuapp.com/templates/${file.name}`,
+    `https://picturestapi.herokuapp.com/templates/template_62d947244f983e0f63c6a6cc.png`,
     {
       public_id: path.parse(file.name).name,
       folder: 'templates',
