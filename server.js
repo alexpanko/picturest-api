@@ -25,6 +25,7 @@ const newimage = require('./routes/newimage');
 const templates = require('./routes/templates');
 const overlays = require('./routes/overlays');
 const images = require('./routes/images');
+const image = require('./routes/image');
 const auth = require('./routes/auth');
 
 const app = express();
@@ -73,6 +74,7 @@ app.use('/api/v1/newimage', newimage);
 app.use('/api/v1/templates', templates);
 app.use('/api/v1/overlays', overlays);
 app.use('/api/v1/images', images);
+app.use('/api/v1/image', image);
 app.use('/api/v1/auth', auth);
 
 // Error handler middleware

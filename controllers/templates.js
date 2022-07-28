@@ -124,6 +124,18 @@ exports.deleteTemplate = asyncHandler(async (req, res, next) => {
 
   template.remove();
 
+  // Remove template image from Cloudinary
+  if (
+    template.image.slice(0, 70) === process.env.CLOUDINARY_IMAGE_UPLOAD_PATH
+  ) {
+    cloudinary.v2.uploader.destroy(
+      template.image.slice(61, 104),
+      function (error, result) {
+        console.log(result, error);
+      }
+    );
+  }
+
   res.status(200).json({ success: true, data: {} });
 });
 
@@ -186,11 +198,11 @@ exports.templateImageUpload = asyncHandler(async (req, res, next) => {
   );
 
   // Set public folder path for production
-  let storage
+  let storage;
   if (process.env.NODE_ENV === 'development') {
-    storage = `/${process.env.TEMPLATE_IMAGE_UPLOAD_PATH}`
+    storage = `./${process.env.TEMPLATE_IMAGE_UPLOAD_PATH}`;
   } else {
-    storage = `${process.env.PRODUCTION_URL}/templates`
+    storage = `${process.env.PRODUCTION_URL}/templates`;
   }
 
   // Upload file to Cloudinary
