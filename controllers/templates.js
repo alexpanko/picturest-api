@@ -185,10 +185,17 @@ exports.templateImageUpload = asyncHandler(async (req, res, next) => {
     }
   );
 
+  // Set public folder path for production
+  let storage
+  if (process.env.NODE_ENV === 'development') {
+    storage = `/${process.env.TEMPLATE_IMAGE_UPLOAD_PATH}`
+  } else {
+    storage = process.env.TEMPLATE_IMAGE_PROD_PATH
+  }
+
   // Upload file to Cloudinary
   await cloudinary.v2.uploader.upload(
-    // `/${process.env.TEMPLATE_IMAGE_UPLOAD_PATH}/${file.name}`,
-    `https://picturestapi.herokuapp.com/templates/${file.name}`,
+    `${storage}/${file.name}`,
     {
       public_id: path.parse(file.name).name,
       folder: 'templates',
