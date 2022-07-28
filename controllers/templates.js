@@ -190,7 +190,7 @@ exports.templateImageUpload = asyncHandler(async (req, res, next) => {
   if (process.env.NODE_ENV === 'development') {
     storage = `/${process.env.TEMPLATE_IMAGE_UPLOAD_PATH}`
   } else {
-    storage = process.env.TEMPLATE_IMAGE_PROD_PATH
+    storage = `${process.env.PRODUCTION_URL}/templates`
   }
 
   // Upload file to Cloudinary
