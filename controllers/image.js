@@ -17,8 +17,8 @@ exports.getNewImage = asyncHandler(async function (req, res, next) {
   const baseimage = req.query.baseimage;
 
   // Get template overlay image
-  let templateObject
-  let overlay
+  let templateObject;
+  let overlay;
   if (req.query.templateid) {
     templateObject = await Template.findById(req.query.templateid);
     overlay = await Jimp.read(templateObject.image);
@@ -30,15 +30,21 @@ exports.getNewImage = asyncHandler(async function (req, res, next) {
   let priceY = 0;
   // Set default font for price
   let priceFont = await Jimp.loadFont(Jimp.FONT_SANS_32_WHITE);
-  // Check if price present in the template 
-  if (templateObject.price) {
+  // Check if price present in the template
+  if (
+    req.query.price &&
+    templateObject.price.axisX &&
+    templateObject.price.axisY
+  ) {
     price = decodeURIComponent(req.query.price);
     priceX = parseInt(templateObject.price.axisX);
     priceY = parseInt(templateObject.price.axisY);
     // Load font for price from template
-    priceFont = await Jimp.loadFont(
-      `./public/fonts/${templateObject.price.font}.fnt`
-    );
+    if (templateObject.price.font) {
+      priceFont = await Jimp.loadFont(
+        `./public/fonts/${templateObject.price.font}.fnt`
+      );
+    }
   }
 
   // Get custom1 (Use ASCII format to pass special characters)
@@ -47,14 +53,21 @@ exports.getNewImage = asyncHandler(async function (req, res, next) {
   let custom1Y = 0;
   // Set default font for custom1
   let custom1Font = await Jimp.loadFont(Jimp.FONT_SANS_32_WHITE);
-  if (req.query.custom1 && req.query.custom1X && req.query.custom1Y) {
+  // Check if field is present in the template
+  if (
+    req.query.custom1 &&
+    templateObject.custom1.axisX &&
+    templateObject.custom1.axisY
+  ) {
     custom1 = decodeURIComponent(req.query.custom1);
-    custom1X = parseInt(req.query.custom1X);
-    custom1Y = parseInt(req.query.custom1Y);
+    custom1X = parseInt(templateObject.custom1.axisX);
+    custom1Y = parseInt(templateObject.custom1.axisY);
     // Load font for custom1 from query params
-    custom1Font = await Jimp.loadFont(
-      `./public/fonts/${req.query.custom1Font}.fnt`
-    );
+    if (templateObject.custom1.font) {
+      custom1Font = await Jimp.loadFont(
+        `./public/fonts/${templateObject.custom1.font}.fnt`
+      );
+    }
   }
 
   // Get custom2 (Use ASCII format to pass special characters)
@@ -63,55 +76,68 @@ exports.getNewImage = asyncHandler(async function (req, res, next) {
   let custom2Y = 0;
   // Set default font for custom2
   let custom2Font = await Jimp.loadFont(Jimp.FONT_SANS_32_WHITE);
-  if (req.query.custom2 && req.query.custom2X && req.query.custom2Y) {
+  // Check if field is present in the template
+  if (
+    req.query.custom2 &&
+    templateObject.custom2.axisX &&
+    templateObject.custom2.axisY
+  ) {
     custom2 = decodeURIComponent(req.query.custom2);
-    custom2X = parseInt(req.query.custom2X);
-    custom2Y = parseInt(req.query.custom2Y);
+    custom2X = parseInt(templateObject.custom2.axisX);
+    custom2Y = parseInt(templateObject.custom2.axisY);
     // Load font for custom2 from query params
-    custom2Font = await Jimp.loadFont(
-      `./public/fonts/${req.query.custom2Font}.fnt`
-    );
+    if (templateObject.custom2.font) {
+      custom2Font = await Jimp.loadFont(
+        `./public/fonts/${templateObject.custom2.font}.fnt`
+      );
+    }
   }
 
-  // Get custom1 (Use ASCII format to pass special characters)
+  // Get custom3 (Use ASCII format to pass special characters)
   let custom3 = '';
   let custom3X = 0;
   let custom3Y = 0;
   // Set default font for custom3
   let custom3Font = await Jimp.loadFont(Jimp.FONT_SANS_32_WHITE);
-  if (req.query.custom3 && req.query.custom3X && req.query.custom3Y) {
+  // Check if field is present in the template
+  if (
+    req.query.custom3 &&
+    templateObject.custom3.axisX &&
+    templateObject.custom3.axisY
+  ) {
     custom3 = decodeURIComponent(req.query.custom3);
-    custom3X = parseInt(req.query.custom3X);
-    custom3Y = parseInt(req.query.custom3Y);
+    custom3X = parseInt(templateObject.custom3.axisX);
+    custom3Y = parseInt(templateObject.custom3.axisY);
     // Load font for custom3 from query params
-    custom3Font = await Jimp.loadFont(
-      `./public/fonts/${req.query.custom3Font}.fnt`
-    );
+    if (templateObject.custom3.font) {
+      custom3Font = await Jimp.loadFont(
+        `./public/fonts/${templateObject.custom3.font}.fnt`
+      );
+    }
   }
 
   // Get resize parameters
   let resizex = null;
   let resizey = null;
-  if (req.query.resizex && req.query.resizey) {
-    resizex = parseInt(req.query.resizex);
-    resizey = parseInt(req.query.resizey);
-  } else if (req.query.resizex && !req.query.resizey) {
-    resizex = parseInt(req.query.resizex);
+  if (templateObject.resize.x && templateObject.resize.y) {
+    resizex = parseInt(templateObject.resize.x);
+    resizey = parseInt(templateObject.resize.y);
+  } else if (templateObject.resize.x && !templateObject.resize.y) {
+    resizex = parseInt(templateObject.resize.x);
     resizey = Jimp.AUTO;
-    console.log(resizex);
-  } else if (!req.query.resizex && req.query.resizey) {
+  } else if (!templateObject.resize.x && templateObject.resize.y) {
     resizex = Jimp.AUTO;
-    resizey = parseInt(req.query.resizey);
+    resizey = parseInt(templateObject.resize.y);
   }
 
   // Get crop parameters
-  let cropX = 0; // default for now, change to query params
+  let cropX = 0;
   let cropY = 0;
-  let cropW = null; // Both cropW and cropH are requered
+  let cropW = null;
   let cropH = null;
-  if (req.query.cropW && req.query.cropH) {
-    cropW = parseInt(req.query.cropW);
-    cropH = parseInt(req.query.cropH);
+  if (templateObject.crop.x && templateObject.crop.y) {
+    cropW = parseInt(templateObject.crop.x);
+    cropH = parseInt(templateObject.crop.y);
   }
 
   // Read base image, process and generate new without saving

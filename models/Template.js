@@ -18,6 +18,14 @@ const TemplateSchema = new mongoose.Schema({
     type: String,
     required: [true, 'Please add an overlay image'],
   },
+  resize: {
+    x: Number,
+    y: Number,
+  },
+  crop: {
+    x: Number,
+    y: Number,
+  },
   price: {
     axisX: Number,
     axisY: Number,
