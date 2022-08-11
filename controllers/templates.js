@@ -43,14 +43,14 @@ exports.getTemplate = asyncHandler(async (req, res, next) => {
   }
 
   // Make sure user is template owner
-  if (template.user.toString() !== req.user.id && req.user.role !== 'admin') {
-    return next(
-      new ErrorResponse(
-        `User ${req.params.id} is not authorized to get this template`,
-        401
-      )
-    );
-  }
+  // if (template.user.toString() !== req.user.id && req.user.role !== 'admin') {
+  //   return next(
+  //     new ErrorResponse(
+  //       `User ${req.params.id} is not authorized to get this template`,
+  //       401
+  //     )
+  //   );
+  // }
 
   res.status(200).json({ success: true, data: template });
 });
