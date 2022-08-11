@@ -91,9 +91,9 @@ const server = app.listen(
   )
 );
 
-// Handle unhandled promise rejections
+// Handle unhandled promise rejections (crash API with unhandled error)
 process.on('unhandledRejection', (err, promise) => {
   console.log(`Error: ${err.message}`.red);
   //Close server & exit process
-  server.close(() => process.exit(1));
+  // server.close(() => process.exit(1));
 });
