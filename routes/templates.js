@@ -22,7 +22,7 @@ router
 
 router
   .route('/:id')
-  .get(protect, authorize('user', 'admin'), getTemplate)
+  .get(getTemplate)
   .put(protect, authorize('user', 'admin'), updateTemplate)
   .delete(protect, authorize('user', 'admin'), deleteTemplate);
 
