@@ -3,7 +3,7 @@ Picturest is a rest API which allows inline image overlay generation to improve 
 
 Extensive API documentation with examples: [here](https://documenter.getpostman.com/view/10852837/UVsQsPPe)
 
-The API is live at [picturest.io](https://picturest.io)
+The API is live at [picturest.io](https://picturestapi.herokuapp.com/)
 
 ![Demo image](https://res.cloudinary.com/picturest/image/upload/v1659964141/documentation_images/picturest_api_example_2_x68bus.png)
 
