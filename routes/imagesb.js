@@ -1,5 +1,5 @@
 const express = require('express');
-const { getNewImage } = require('../controllers/newimage');
+const { getNewImage } = require('../controllers/imagesb');
 
 const router = express.Router();
 

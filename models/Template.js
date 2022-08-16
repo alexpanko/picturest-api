@@ -4,7 +4,7 @@ const TemplateSchema = new mongoose.Schema({
   name: {
     type: String,
     required: [true, 'Please add a name'],
-    unique: true,
+    unique: false,
     trim: true,
     maxlength: [50, 'Name can not be more than 50 characters'],
   },
@@ -16,7 +16,7 @@ const TemplateSchema = new mongoose.Schema({
   },
   image: {
     type: String,
-    required: [true, 'Please add an overlay image'],
+    // required: [true, 'Please add a template image'],
   },
   resize: {
     x: Number,

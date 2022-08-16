@@ -21,10 +21,8 @@ dotenv.config({ path: './config/config.env' });
 connectDB();
 
 // Route files
-const newimage = require('./routes/newimage');
+const imagesb = require('./routes/imagesb');
 const templates = require('./routes/templates');
-const overlays = require('./routes/overlays');
-const images = require('./routes/images');
 const image = require('./routes/image');
 const auth = require('./routes/auth');
 
@@ -70,10 +68,8 @@ app.use(cors());
 app.use(express.static(path.join(__dirname, 'public')));
 
 // Mount routers
-app.use('/api/v1/newimage', newimage);
+app.use('/api/v1/imagesb', imagesb);
 app.use('/api/v1/templates', templates);
-app.use('/api/v1/overlays', overlays);
-app.use('/api/v1/images', images);
 app.use('/api/v1/image', image);
 app.use('/api/v1/auth', auth);
 
