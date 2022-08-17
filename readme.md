@@ -78,3 +78,5 @@ To build this API I used folowing technology and packages:
 
 ### Author
 [Alex Panko](https://www.linkedin.com/in/panko/)
+
+*Disclamer: This API is built as a personal learning and development project and can not be used for any commercial purposes without the author's permission.*
